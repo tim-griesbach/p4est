@@ -17,7 +17,7 @@
 count=0
 
 if test $# -ne 2; then
-  echo >&2 "Usage: ./check_sc BASE_BRANCH BRANCH_TO_MERGE"
+  echo >&2 "Usage: ./build-aux/check_sc BASE_BRANCH BRANCH_TO_MERGE"
   exit 2
 fi
 
