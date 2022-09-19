@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # A script to check for commits that are added by a merge if their
-# corresponding libsc commit is present in the libsc/prev3-develop.
+# corresponding libsc commit is present in the given LIBSC_BRANCH.
 # This script requires two command line parameters.
 #
-# ./build-aux/check_sc BASE_BRANCH BRANCH_TO_MERGE
+# ./build-aux/check_sc BASE_BRANCH BRANCH_TO_MERGE LIBSC BRANCH
 #
 # Both passed branches must be branches in p4est.
 #
@@ -16,8 +16,8 @@
 
 count=0
 
-if test $# -ne 2; then
-  echo >&2 "Usage: ./build-aux/check_sc BASE_BRANCH BRANCH_TO_MERGE"
+if test $# -ne 3; then
+  echo >&2 "Usage: ./build-aux/check_sc BASE_BRANCH BRANCH_TO_MERGE LIBSC_BRANCH"
   exit 2
 fi
 
@@ -31,10 +31,10 @@ do
   sc_commit=$(echo $sc | cut -d' ' -f1)
   cd sc
   # check ancestor relation (grep with 'not' to see only negativ results)
-  if git merge-base --is-ancestor $sc_commit prev3-develop; then
-    echo "$sc_commit is an ancestor of libsc/prev3-develop"
+  if git merge-base --is-ancestor $sc_commit $3; then
+    echo "$sc_commit is an ancestor of libsc/$3"
   else
-    echo "$sc_commit is not an ancestor of libsc/prev3-develop"
+    echo "$sc_commit is not an ancestor of libsc/$3"
   fi
   cd ..
   ((count++))
