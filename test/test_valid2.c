@@ -140,8 +140,10 @@ check_all (sc_MPI_Comm mpicomm, p4est_connectivity_t * conn,
   mpiret = sc_MPI_Reduce (lsize, gsize, 3, sc_MPI_LONG_LONG_INT, sc_MPI_SUM,
                           0, mpicomm);
   SC_CHECK_MPI (mpiret);
-  P4EST_GLOBAL_INFOF ("Global byte sizes: %lld %lld %lld\n",
-                      gsize[0], gsize[1], gsize[2]);
+  if (p4est->mpirank == 0) {
+    P4EST_GLOBAL_INFOF ("Global byte sizes: %lld %lld %lld\n",
+                        gsize[0], gsize[1], gsize[2]);
+  }
 
   gcrc_computed = p4est_ghost_checksum (p4est, ghost);
   P4EST_GLOBAL_STATISTICSF ("Ghost checksum 0x%08x\n", gcrc_computed);
