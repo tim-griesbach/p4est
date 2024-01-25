@@ -10,7 +10,7 @@ on:
 jobs:
 
   linux-autotools-valgrind:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Autotools with valgrind
     steps:
 
