@@ -19,6 +19,8 @@ env:
   CTEST_PARALLEL_LEVEL: 0
   CMAKE_BUILD_PARALLEL_LEVEL: 4
   CTEST_NO_TESTS_ACTION: "error"
+  CMAKE_INSTALL_PREFIX: ~/libs
+  CMAKE_PREFIX_PATH: ~/libs
 
 jobs:
 
@@ -53,50 +55,11 @@ jobs:
         sudo apt-get update -yq
         sudo apt-get install -yq --no-install-recommends zlib1g-dev lib${{ matrix.mpi }}-dev
 
-    - name: CMake configure
-      run: >-
-        cmake --preset default
-        --install-prefix=${{ runner.temp }}
-        -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
-
-    - name: CMake build
-      run: cmake --build --preset default
-
-    - name: CMake self-tests
-      run: ctest --preset default
-
-    - name: install p4est CMake package
-      run: cmake --install build
-
-      # standalone examples tests that CMake packaging is correct
-    - name: CMake configure examples
-      run: >-
-        cmake -B example/build -S example
-        -DCMAKE_PREFIX_PATH:PATH=${{ runner.temp }}
-        -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
-
-    - name: CMake build examples
-      run: cmake --build example/build
-
-    - name: Create package
-      if: github.event.action == 'published'
-      run: cpack --config build/CPackConfig.cmake
+    - name: CMake build-test-install-package
+      uses: ./.github/workflows/composite-unix
 
     - name: Upload package
-      if: github.event.action == 'published'
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux_binary_archive-${{ matrix.cc }}-${{ matrix.mpi }}-shared-${{ matrix.shared }}
-        path: build/package
-
-    - name: Upload log files
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux_cmake_log-${{ matrix.cc }}-${{ matrix.mpi }}-shared-${{ matrix.shared }}
-        path: |
-          ./build/CMakeFiles/CMakeConfigureLog.yaml
-          ./build/Testing/Temporary/LastTest.log
+      uses: ./.github/workflows/composite-pkg
 
   mac:
     # macos-14 is to use Apple Silicon hardware
@@ -124,49 +87,11 @@ jobs:
     - name: Install system dependencies
       run: brew install open-mpi
 
-    - name: CMake configure
-      run: >-
-        cmake --preset default
-        --install-prefix=${{ runner.temp }}
-        -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
-
-    - name: CMake build
-      run: cmake --build --preset default
-
-    - name: CMake self-tests
-      run: ctest --preset default
-
-    - name: install p4est CMake package
-      run: cmake --install build
-
-    - name: CMake configure examples
-      run: >-
-        cmake -B example/build -S example
-        -DCMAKE_PREFIX_PATH:PATH=${{ runner.temp }}
-        -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
-
-    - name: CMake build examples
-      run: cmake --build example/build
-
-    - name: Create package
-      if: github.event.action == 'published'
-      run: cpack --config build/CPackConfig.cmake
+    - name: CMake build-test-install-package
+      uses: ./.github/workflows/composite-unix
 
     - name: Upload package
-      if: github.event.action == 'published'
-      uses: actions/upload-artifact@v4
-      with:
-        name: mac_binary_archive-${{ matrix.cc }}-shared-${{ matrix.shared }}
-        path: build/package
-
-    - name: Upload log files
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: mac_cmake_log-${{ matrix.cc }}-shared-${{ matrix.shared }}
-        path: |
-          ./build/CMakeFiles/CMakeConfigureLog.yaml
-          ./build/Testing/Temporary/LastTest.log
+      uses: ./.github/workflows/composite-pkg
 
   windows:
     runs-on: windows-latest
@@ -179,6 +104,8 @@ jobs:
 
     env:
       CMAKE_GENERATOR: "MinGW Makefiles"
+      CMAKE_INSTALL_PREFIX: libs
+      CMAKE_PREFIX_PATH: libs
 
     steps:
     - uses: msys2/setup-msys2@v2
@@ -198,9 +125,9 @@ jobs:
       run: >-
         cmake --preset default
         -Dmpi:BOOL=no
-        --install-prefix=${{ runner.temp }}
         -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
-        -DZLIB_ROOT:PATH=${{ runner.temp }}/msys64/mingw64/
+      env:
+        ZLIB_ROOT: ${{ runner.temp }}/msys64/mingw64
 
     - name: CMake build
       run: cmake --build --preset default
@@ -214,7 +141,6 @@ jobs:
     - name: CMake configure examples
       run: >-
         cmake -B example/build -S example
-        -DCMAKE_PREFIX_PATH:PATH=${{ runner.temp }}
         -DBUILD_SHARED_LIBS:BOOL=${{ matrix.shared }}
         -DZLIB_ROOT:PATH=${{ runner.temp }}/msys64/mingw64/
 
@@ -226,17 +152,4 @@ jobs:
       run: cpack --config build/CPackConfig.cmake
 
     - name: Upload package
-      if: github.event.action == 'published'
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows_binary_archive
-        path: build/package
-
-    - name: Upload log files
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows_cmake_log
-        path: |
-          ./build/CMakeFiles/CMakeConfigureLog.yaml
-          ./build/Testing/Temporary/LastTest.log
+      uses: ./.github/workflows/composite-pkg
