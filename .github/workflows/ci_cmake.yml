@@ -24,14 +24,14 @@ env:
 
 jobs:
 
-  linux:
-    runs-on: ubuntu-22.04
-    name: CMake build on Linux
+  linux-gcc14:
+    runs-on: ubuntu-24.04
+    name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
     timeout-minutes: 60
 
     strategy:
       matrix:
-        cc: [gcc-9, gcc-10, gcc-11, gcc-12, gcc-13]
+        cc: [gcc-12, gcc-13, gcc-14]
         shared: [false]
         mpi: [mpich]
         include:
@@ -61,11 +61,40 @@ jobs:
     - name: Upload package
       uses: ./.github/workflows/composite-pkg
 
+
+  linux-gcc9:
+    runs-on: ubuntu-22.04
+    name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
+    timeout-minutes: 60
+
+    strategy:
+      matrix:
+        cc: [gcc-9, gcc-10, gcc-11]
+        shared: [false]
+        mpi: [mpich]
+
+    env:
+      CC: ${{ matrix.cc }}
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout source code
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update -yq
+        sudo apt-get install -yq --no-install-recommends zlib1g-dev lib${{ matrix.mpi }}-dev
+
+    - name: CMake build-test-install-package
+      uses: ./.github/workflows/composite-unix
+
+    - name: Upload package
+      uses: ./.github/workflows/composite-pkg
+
+
   mac:
-    # macos-14 is to use Apple Silicon hardware
-    # https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
     runs-on: macos-14
-    name: CMake build on MacOS
+    name: macOS CC=${{ matrix.cc }} shared=${{ matrix.shared }}
     timeout-minutes: 60
 
     strategy:
@@ -93,9 +122,10 @@ jobs:
     - name: Upload package
       uses: ./.github/workflows/composite-pkg
 
+
   windows:
     runs-on: windows-latest
-    name: CMake build on Windows
+    name: Windows
     timeout-minutes: 60
 
     strategy:
