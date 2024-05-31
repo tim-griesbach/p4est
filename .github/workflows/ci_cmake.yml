@@ -27,7 +27,7 @@ jobs:
   linux-gcc14:
     runs-on: ubuntu-24.04
     name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
-    timeout-minutes: 60
+    timeout-minutes: 61
 
     strategy:
       matrix:

@@ -51,7 +51,7 @@ jobs:
           ./**/test/*.log
 
   linux-cmake-valgrind:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     name: CMake with valgrind
     steps:
 

@@ -3604,6 +3604,7 @@ p4est_save_ext (const char *filename, p4est_t * p4est,
                           MPI_MODE_WRONLY | MPI_MODE_APPEND |
                           MPI_MODE_UNIQUE_OPEN, MPI_INFO_NULL, &mpifile);
   SC_CHECK_MPI (mpiret);
+  printf ("rank %d after MPI_file_open\n", p4est->mpirank);
   mpiret = MPI_File_get_position (mpifile, &mpipos);
   printf ("[%d]: after append pos = %llu\n", p4est->mpirank, (long long unsigned) mpipos);
   SC_CHECK_MPI (mpiret);
