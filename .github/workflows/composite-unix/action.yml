@@ -15,7 +15,7 @@ runs:
 
   - name: CMake self-tests
     shell: bash
-    run: ctest --preset default || (ll && md5sum p4est.p4p)
+    run: ctest --preset default || (ls && md5sum p4est.p4p)
 
   - name: install p4est CMake package
     shell: bash
