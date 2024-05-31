@@ -3600,6 +3600,7 @@ p4est_save_ext (const char *filename, p4est_t * p4est,
   /* Every core opens the file in append mode -- file must exist */
   mpiret = sc_MPI_Barrier (p4est->mpicomm);
   SC_CHECK_MPI (mpiret);
+  printf ("rank %d before MPI_file_open\n", p4est->mpirank);
   mpiret = MPI_File_open (p4est->mpicomm, (char *) filename,
                           MPI_MODE_WRONLY | MPI_MODE_APPEND |
                           MPI_MODE_UNIQUE_OPEN, MPI_INFO_NULL, &mpifile);
