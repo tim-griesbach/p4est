@@ -3607,6 +3607,10 @@ p4est_save_ext (const char *filename, p4est_t * p4est,
   mpiret = MPI_File_get_position (mpifile, &mpipos);
   printf ("[%d]: after append pos = %llu\n", p4est->mpirank, (long long unsigned) mpipos);
   SC_CHECK_MPI (mpiret);
+  MPI_Offset disp;
+  mpiret = MPI_File_get_byte_offset (mpifile, mpipos, &disp);
+  printf ("[%d]: after append disp = %llu\n", p4est->mpirank, (long long unsigned) disp);
+  SC_CHECK_MPI (mpiret);
 #endif
 
   if (rank > 0) {
