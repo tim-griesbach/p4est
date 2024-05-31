@@ -4,6 +4,7 @@ runs:
 
     steps:
     - name: Upload package
+      if: always()
       if: github.event.action == 'published'
       uses: actions/upload-artifact@v4
       with:
