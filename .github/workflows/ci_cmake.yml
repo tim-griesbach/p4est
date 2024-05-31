@@ -56,7 +56,7 @@ jobs:
         sudo apt-get install -yq --no-install-recommends zlib1g-dev lib${{ matrix.mpi }}-dev
 
     - name: CMake build-test-install-package
-      uses: ./.github/workflows/composite-unix
+      uses: ./.github/workflows/composite-unix && echo Test
 
     - name: Upload package
       uses: ./.github/workflows/composite-pkg
