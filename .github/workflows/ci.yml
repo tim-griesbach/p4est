@@ -16,7 +16,7 @@ on:
 jobs:
 
   linux-multi1:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Build 1 on Linux
     steps:
 
@@ -72,7 +72,7 @@ jobs:
           ./**/test/*.log
 
   linux-multi2:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Build 2 on Linux
     steps:
 
@@ -117,7 +117,7 @@ jobs:
           ./**/test/*.log
 
   linux-install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Make install on Linux
     steps:
 
@@ -178,7 +178,7 @@ jobs:
           ./**/test/*.log
 
   linux-tarball:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Pack tarball on Linux
     steps:
 
