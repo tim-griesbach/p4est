@@ -25,7 +25,7 @@ env:
 jobs:
 
   linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
     timeout-minutes: 60
 
