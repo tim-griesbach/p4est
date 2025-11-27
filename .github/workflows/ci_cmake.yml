@@ -35,20 +35,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc]
+        cc: [gcc-15]
         shared: [false]
         mpi: [mpich]
         include:
-        - cc: gcc
+        - cc: gcc-15
           shared: true
           mpi: mpich
-        - cc: gcc
+        - cc: gcc-15
           shared: false
           mpi: openmpi
 
 
     env:
       CC: ${{ matrix.cc }}
+      CXX: g++-15
 
     steps:
     - uses: actions/checkout@v4
@@ -56,6 +57,13 @@ jobs:
 
     - name: Install deps
       uses: ./.github/workflows/composite-deps
+
+    - name: Install GCC 15
+      run: |
+        sudo add-apt-repository -y ppa:puni070/gcc-noble
+        sudo apt-get update
+        sudo apt-get install -y gcc-15 g++-15
+      # no env changes needed here
 
     - name: CMake build-test-install-package
       uses: ./.github/workflows/composite-unix
