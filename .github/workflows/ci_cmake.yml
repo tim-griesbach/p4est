@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc]
+        cc: [gcc-15]
         shared: [false]
         mpi: [mpich]
         include:
