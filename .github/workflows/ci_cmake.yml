@@ -29,6 +29,8 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/mattkretz/cplusplus-ci/gcc15
     name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
     timeout-minutes: 60
 
