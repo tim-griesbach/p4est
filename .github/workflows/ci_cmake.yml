@@ -39,10 +39,10 @@ jobs:
         shared: [false]
         mpi: [mpich]
         include:
-        - cc: gcc
+        - cc: gcc-15
           shared: true
           mpi: mpich
-        - cc: gcc
+        - cc: gcc-15
           shared: false
           mpi: openmpi
 
