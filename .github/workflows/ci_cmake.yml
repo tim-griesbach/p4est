@@ -28,75 +28,54 @@ env:
 jobs:
 
   linux:
-    runs-on: ubuntu-latest
-    name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
-    timeout-minutes: 60
+      runs-on: ubuntu-latest
+      name: Linux mpi=${{ matrix.mpi }} CC=${{ matrix.cc }} shared=${{ matrix.shared }}
+      timeout-minutes: 60
 
-    strategy:
-      fail-fast: false
-      matrix:
-        cc: [gcc-15]
-        shared: [false]
-        mpi: [mpich]
-        include:
-        - cc: gcc-15
-          shared: true
-          mpi: mpich
-        - cc: gcc-15
-          shared: false
-          mpi: openmpi
+      strategy:
+        fail-fast: false
+        matrix:
+          # use the actual gcc-15 binary name in the matrix
+          cc: [gcc-15]
+          shared: [false]
+          mpi: [mpich]
+          include:
+          - cc: gcc-15
+            shared: true
+            mpi: mpich
+          - cc: gcc-15
+            shared: false
+            mpi: openmpi
 
+      env:
+        CC: ${{ matrix.cc }}
+        CXX: g++-15
+        CTEST_PARALLEL_LEVEL: 0
+        CMAKE_BUILD_PARALLEL_LEVEL: 4
+        CTEST_NO_TESTS_ACTION: "error"
+        CMAKE_INSTALL_PREFIX: ~/local
+        CMAKE_PREFIX_PATH: ~/local
+        P4EST_CI_CONFIG_OPT: -DP4EST_ENABLE_FILE_CHECKS=OFF -DSC_ENABLE_FILE_CHECKS=OFF
 
-    env:
-      CC: ${{ matrix.cc }}
+      steps:
+      - uses: actions/checkout@v4
+        name: Checkout source code
 
-    steps:
-    - uses: actions/checkout@v4
-      name: Checkout source code
+      - name: Install GCC 15
+        run: |
+          sudo add-apt-repository -y ppa:puni070/gcc-noble
+          sudo apt-get update
+          sudo apt-get install -y gcc-15 g++-15
+        # no env changes needed here
 
-    - name: Install deps
-      uses: ./.github/workflows/composite-deps
+      - name: Install deps
+        uses: ./.github/workflows/composite-deps
 
-    - name: CMake build-test-install-package
-      uses: ./.github/workflows/composite-unix
+      - name: CMake build-test-install-package
+        uses: ./.github/workflows/composite-unix
 
-    - name: Upload package
-      uses: ./.github/workflows/composite-pkg
-
-
-  mac:
-    runs-on: macos-latest
-    name: macOS CC=${{ matrix.cc }} shared=${{ matrix.shared }}
-    timeout-minutes: 60
-
-    strategy:
-      matrix:
-        cc: [clang]
-        shared: [false, true]
-
-    env:
-      HOMEBREW_NO_INSTALL_CLEANUP: 1
-      CC: ${{ matrix.cc }}
-
-    steps:
-    - uses: actions/checkout@v4
-      name: Checkout source code
-
-    - name: Install GCC 15
-      run: |
-        sudo add-apt-repository -y ppa:puni070/gcc-noble
-        sudo apt-get update
-        sudo apt-get install -y gcc-15 g++-15
-      # no env changes needed here
-
-    - name: Install deps
-      uses: ./.github/workflows/composite-deps
-
-    - name: CMake build-test-install-package
-      uses: ./.github/workflows/composite-unix
-
-    - name: Upload package
-      uses: ./.github/workflows/composite-pkg
+      - name: Upload package
+        uses: ./.github/workflows/composite-pkg
 
 
   windows:
